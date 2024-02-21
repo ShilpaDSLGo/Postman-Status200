@@ -1,0 +1,1158 @@
+{
+	"info": {
+		"_postman_id": "d0a1535d-9e73-4d14-819b-ca425957e21d",
+		"name": "Dietician Copy",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27993694"
+	},
+	"item": [
+		{
+			"name": "Dietician Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"res = JSON.parse(responseBody)\r",
+							"value = res.token\r",
+							"console.log(value)\r",
+							"pm.collectionVariables.set(\"dietician token\", value);\r",
+							"\r",
+							"pm.test(\"Body contains string\",() => {\r",
+							"  pm.expect(pm.response.text()).to.include(\"token\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"password\": \"Growth76\",\r\n  \"userLoginEmail\": \"shanvino.012710@gmail.com\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DietUrl}}/login",
+					"host": [
+						"{{DietUrl}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get all morbidity",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{dietician token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{DietUrl}}/morbidity",
+					"host": [
+						"{{DietUrl}}"
+					],
+					"path": [
+						"morbidity"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get morbidity by name",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Body matches string\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"Plasma Glucose\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{dietician token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{DietUrl}}/morbidity/{{morbidityName}}",
+					"host": [
+						"{{DietUrl}}"
+					],
+					"path": [
+						"morbidity",
+						"{{morbidityName}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create patient",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const PhoneNumber= _.random(1010101010,1212121212)\r",
+							"pm.variables.set(\"PhoneNumber\", PhoneNumber )\r",
+							"\r",
+							"//pm.variables.set(\"$randomEmail\",_.$randomEmail)\r",
+							"\r",
+							"//let email=_.random(1000)+'@domain.com'\r",
+							" //pm.variables.set(\"email\",email)\r",
+							"\r",
+							" let email=_.random(1000)+'@domain.com'\r",
+							" pm.environment.set('email',email)"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"\r",
+							"});\r",
+							"pm.test(\"Status code name has string 'Created' \", function () {\r",
+							"    pm.response.to.have.status(\"Created\");\r",
+							"});\r",
+							"const jsonData=JSON.parse(responseBody);\r",
+							" pm.globals.set(\"patientId\", jsonData.patientId);\r",
+							" console.log(\"patientId:\"  +jsonData.patientId);\r",
+							" \r",
+							"pm.globals.set(\"patientIdinvalid\", jsonData.patientId+15);\r",
+							" console.log(\"patientIdinvalid:\"  +jsonData.patientId+15);\r",
+							"\r",
+							" pm.test(\"Content-Type header is present\", () => {\r",
+							"  pm.response.to.have.header(\"Content-Type\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Body contains string\",() => {\r",
+							"  pm.expect(pm.response.text()).to.include(\"patientId\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{dietician token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "patientInfo",
+							"value": "{\n\"FirstName\":\"{{FirstName}}\",\n\"LastName\":\"{{LastName}}\",\n\"ContactNumber\":\"{{ContactNumber}}\",\n\"Email\":\"{{Email}}\",\n\"Allergy\":\"{{Allergy}}\",\n\"FoodCategory\":\"{{FoodCategory}}\",\n\"DateOfBirth\":\"{{DateOfBirth}}\"\n}",
+							"type": "text"
+						},
+						{
+							"key": "file",
+							"type": "file",
+							"src": "rcw-VtLVd/Hypo Thyroid-Report.pdf"
+						},
+						{
+							"key": "",
+							"type": "file",
+							"src": [],
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "{{DietUrl}}/patient",
+					"host": [
+						"{{DietUrl}}"
+					],
+					"path": [
+						"patient"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create patient_Error500",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 500\", function () {\r",
+							"    pm.response.to.have.status(500);\r",
+							"\r",
+							"});\r",
+							"\r",
+							" \r",
+							"\r",
+							" "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{dietician token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "patientInfo",
+							"value": "{\n\"FirstName\":\"{{FirstName}}\",\n\"LastName\":\"{{LastName}}\",\n\"ContactNumber\":\"{{ContactNumber}}\",\n\"mail\":\"{{Email}}\",\n\"Allergy\":\"{{Allergy}}\",\n\"FoodCategory\":\"{{FoodCategory}}\",\n\"DateOfBirth\":\"{{DateOfBirth}}\"\n}",
+							"type": "text"
+						},
+						{
+							"key": "file",
+							"type": "file",
+							"src": "rcw-VtLVd/Hypo Thyroid-Report.pdf"
+						},
+						{
+							"key": "",
+							"type": "file",
+							"src": [],
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "{{DietUrl}}/patient",
+					"host": [
+						"{{DietUrl}}"
+					],
+					"path": [
+						"patient"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create patient_ Error400",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{dietician token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "patientInfo",
+							"value": "{\n\"FirstName\":\"{{FirstName}}\",\n\"LastName\":\"{{LastName}}\",\n\"ContactNumber\":\"{{ContactNumber}}\",\n\n\"Allergy\":\"{{Allergy}}\",\n\"FoodCategory\":\"{{FoodCategory}}\",\n\"DateOfBirth\":\"{{DateOfBirth}}\"\n}",
+							"type": "text"
+						},
+						{
+							"key": "file",
+							"type": "file",
+							"src": [],
+							"disabled": true
+						},
+						{
+							"key": "",
+							"type": "file",
+							"src": [],
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "{{DietUrl}}/patient",
+					"host": [
+						"{{DietUrl}}"
+					],
+					"path": [
+						"patient"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get all patient",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{dietician token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{DietUrl}}/patient",
+					"host": [
+						"{{DietUrl}}"
+					],
+					"path": [
+						"patient"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UpdatePatient",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"const jsonData=JSON.parse(responseBody);\r",
+							" pm.globals.set(\"Email\", jsonData.Email);\r",
+							" console.log(jsonData.Email);\r",
+							"\r",
+							" pm.test(\"Content-Type header is present\", () => {\r",
+							"  pm.response.to.have.header(\"Content-Type\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{dietician token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "patientInfo",
+							"value": "{\n\"FirstName\":\"{{FirstName}}\",\n\"LastName\":\"{{LastName}}\",\n\"ContactNumber\":\"{{ContactNumber}}\",\n\"Email\":\"{{Email}}\",\n \"patientId\":\"{{patientId}}\",\n\"Allergy\":\"{{Allergy}}\",\n\"FoodCategory\":\"{{FoodCategory}}\",\n\"DateOfBirth\":\"{{DateOfBirth}}\"\n}",
+							"type": "text"
+						},
+						{
+							"key": "file",
+							"type": "file",
+							"src": "5HFdroCI5/Hypo Thyroid-Report.pdf"
+						},
+						{
+							"key": "",
+							"type": "file",
+							"src": [],
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "{{DietUrl}}/patient/{{patientId}}",
+					"host": [
+						"{{DietUrl}}"
+					],
+					"path": [
+						"patient",
+						"{{patientId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UpdatePatient_patientId_invalid",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{dietician token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "patientInfo",
+							"value": "{\n\"FirstName\":\"{{FirstName}}\",\n\"LastName\":\"{{LastName}}\",\n\"ContactNumber\":\"{{ContactNumber}}\",\n\"Email\":\"{{Email}}\",\n \"patientId\":\"{{patientId}}\",\n\"Allergy\":\"{{Allergy}}\",\n\"FoodCategory\":\"{{FoodCategory}}\",\n\"DateOfBirth\":\"{{DateOfBirth}}\"\n}",
+							"type": "text"
+						},
+						{
+							"key": "file",
+							"type": "file",
+							"src": "dD5Mla1EO/Hypo Thyroid-Report.pdf"
+						},
+						{
+							"key": "",
+							"type": "file",
+							"src": [],
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "{{DietUrl}}/patient/{{patientIdinvalid}}",
+					"host": [
+						"{{DietUrl}}"
+					],
+					"path": [
+						"patient",
+						"{{patientIdinvalid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Patient_Report",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"const jsonData=JSON.parse(responseBody);\r",
+							"var Id=jsonData[0].fileId;\r",
+							"console.log(Id)\r",
+							"pm.collectionVariables.set(\"fileId\",Id);\r",
+							"\r",
+							"\r",
+							" console.log(Id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{dietician token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{DietUrl}}/patient/testReports/{{patientId}}",
+					"host": [
+						"{{DietUrl}}"
+					],
+					"path": [
+						"patient",
+						"testReports",
+						"{{patientId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PatientReport_bypatientId_invalid",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{dietician token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{DietUrl}}/patient/testReports/{{patientIdinvalid}}",
+					"host": [
+						"{{DietUrl}}"
+					],
+					"path": [
+						"patient",
+						"testReports",
+						"{{patientIdinvalid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Patient_1Report_viewfile",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{dietician token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{DietUrl}}/patient/testReports/viewFile/{{fileId}}",
+					"host": [
+						"{{DietUrl}}"
+					],
+					"path": [
+						"patient",
+						"testReports",
+						"viewFile",
+						"{{fileId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Patient_1Report_viewfile invalid",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{dietician token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{DietUrl}}/patient/testReports/viewFile/{{invalidfileId}}",
+					"host": [
+						"{{DietUrl}}"
+					],
+					"path": [
+						"patient",
+						"testReports",
+						"viewFile",
+						"{{invalidfileId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Patient Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"res = JSON.parse(responseBody)\r",
+							"value = res.token\r",
+							"console.log(value)\r",
+							"pm.collectionVariables.set(\"Patient token\", value);\r",
+							"\r",
+							"pm.test(\"Body contains string\",() => {\r",
+							"  pm.expect(pm.response.text()).to.include(\"token\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"password\": \"test\",\r\n  \"userLoginEmail\":\"{{Email}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{DietUrl}}/login",
+					"host": [
+						"{{DietUrl}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get patient report from patientlogin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{Patient token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{DietUrl}}/patient/testReports/{{patientId}}",
+					"host": [
+						"{{DietUrl}}"
+					],
+					"path": [
+						"patient",
+						"testReports",
+						"{{patientId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get patient report from patientlogin_invalid",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{Patient token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{DietUrl}}/patient/testReports/{{patientIdinvalid}}",
+					"host": [
+						"{{DietUrl}}"
+					],
+					"path": [
+						"patient",
+						"testReports",
+						"{{patientIdinvalid}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get patient view file from patient login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{Patient token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{DietUrl}}/patient/testReports/viewFile/{{fileId}}",
+					"host": [
+						"{{DietUrl}}"
+					],
+					"path": [
+						"patient",
+						"testReports",
+						"viewFile",
+						"{{fileId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get patient view file from patient login_invalid",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{Patient token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{DietUrl}}/patient/testReports/viewFile/{{invalidfileId}}",
+					"host": [
+						"{{DietUrl}}"
+					],
+					"path": [
+						"patient",
+						"testReports",
+						"viewFile",
+						"{{invalidfileId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete patient2 by id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{dietician token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{DietUrl}}/patient/{{patientId}}",
+					"host": [
+						"{{DietUrl}}"
+					],
+					"path": [
+						"patient",
+						"{{patientId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Dietician Logout",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{dietician token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{DietUrl}}/logoutdietician",
+					"host": [
+						"{{DietUrl}}"
+					],
+					"path": [
+						"logoutdietician"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Patient Logout",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{Patient token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{DietUrl}}/logoutdietician",
+					"host": [
+						"{{DietUrl}}"
+					],
+					"path": [
+						"logoutdietician"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "DietUrl",
+			"value": "https://dietician-dev-41d9a344a720.herokuapp.com/dietician"
+		},
+		{
+			"key": "morbidityName",
+			"value": "Plasma Glucose"
+		},
+		{
+			"key": "BearerToken",
+			"value": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzaGFudmluby4wMTI3MTBAZ21haWwuY29tIiwiaWF0IjoxNzAwMTc5Mjg4LCJleHAiOjE3MDAyMDgwODh9.F9TteQxmFpgSgmT_1Za3SN5YcBvBqqUhmIOsNh6kAGosZdkV85Ak9Ega_ynG58ty8d0HW870Gr1aOPKddLWz8g",
+			"type": "string",
+			"disabled": true
+		},
+		{
+			"key": "fileId",
+			"value": "Id"
+		},
+		{
+			"key": "Patient token",
+			"value": "Patient token"
+		},
+		{
+			"key": "dietician token",
+			"value": "dietician token"
+		},
+		{
+			"key": "BearerToken",
+			"value": ""
+		},
+		{
+			"key": "token",
+			"value": ""
+		},
+		{
+			"key": "invalidpatientid",
+			"value": "u90",
+			"type": "string"
+		},
+		{
+			"key": "invalidfileId",
+			"value": "s67",
+			"type": "string"
+		}
+	]
+}
